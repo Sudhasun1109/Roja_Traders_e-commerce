@@ -174,16 +174,13 @@ export default function LoginPage() {
     if (!password) {
       newErrors.password = 'Password is required';
       setHasInteractedPassword(true);
-    } else if (!passwordCriteria.isValid) {
-      newErrors.password = 'Password does not meet the required security rules';
-      setHasInteractedPassword(true);
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Login Submit Handler
+  // Login Submit Handler (Role-Based Access Control)
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
@@ -204,7 +201,15 @@ export default function LoginPage() {
     }
 
     try {
-      await customerLogin(mobileNumber.trim(), password, countryCode);
+      const data = await customerLogin(mobileNumber.trim(), password, countryCode);
+
+      // Role-Based Access Control: Admin vs Customer
+      if (data.role === 'admin' || data.user?.role === 'admin') {
+        success('Welcome, Administrator! Opening Admin Dashboard...');
+        navigate('/admin/dashboard');
+        return;
+      }
+
       success(`Welcome back! You are now logged in as ${countryCode} ${mobileNumber}`);
 
       // If came from order flow, redirect back to order/catalog
@@ -220,14 +225,23 @@ export default function LoginPage() {
     }
   };
 
-  // Quick Demo Fill
+  // Quick Demo Fills
+  const handleAdminDemoFill = () => {
+    setCountryCode('+91');
+    setMobileNumber('9876543210');
+    setPassword('admin123');
+    setHasInteractedPassword(true);
+    setErrors({});
+    info('Admin credentials loaded (9876543210 / admin123)');
+  };
+
   const handleQuickDemoFill = () => {
     setCountryCode('+91');
     setMobileNumber('9876543210');
-    setPassword('Customer@123'); // satisfies all 4 rules: 8 chars, 'C' uppercase, '123' numbers, '@' special
+    setPassword('admin123');
     setHasInteractedPassword(true);
     setErrors({});
-    info('Demo customer credentials loaded');
+    info('Credentials loaded (9876543210 / admin123)');
   };
 
   // ==========================================
@@ -498,19 +512,36 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Quick Demo Fill Helper Pill */}
-            <div className="mb-5 p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-emerald-900">
-                <Sparkles className="w-4 h-4 text-[#25D366] shrink-0" />
-                <span className="font-semibold">Quick Demo Login:</span>
+            {/* Role-Based Quick Demo Fill Helper */}
+            <div className="mb-5 p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-emerald-900 font-semibold">
+                  <Sparkles className="w-4 h-4 text-[#25D366] shrink-0" />
+                  <span>Role-Based Demo:</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleAdminDemoFill}
+                    className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-2xs transition-all cursor-pointer flex items-center gap-1"
+                    title="Fill Admin Credentials"
+                  >
+                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                    <span>Admin</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleQuickDemoFill}
+                    className="px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white text-[11px] font-bold rounded-lg shadow-2xs transition-all cursor-pointer"
+                    title="Fill Credentials"
+                  >
+                    <span>Customer</span>
+                  </button>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={handleQuickDemoFill}
-                className="px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white text-[11px] font-bold rounded-lg shadow-2xs transition-all cursor-pointer"
-              >
-                Auto-fill
-              </button>
+              <p className="text-[10px] text-slate-500 mt-1 pl-5.5">
+                Admin mobile redirects to <strong>Admin Dashboard</strong>. Customer mobile accesses store.
+              </p>
             </div>
 
             {/* Login Form */}
@@ -606,33 +637,6 @@ export default function LoginPage() {
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{errors.password}</span>
                   </p>
-                )}
-
-                {/* DYNAMIC PASSWORD VALIDATION RULES (Shown in small size ONLY when user enters and validation is wrong) */}
-                {hasInteractedPassword && !passwordCriteria.isValid && password.length > 0 && (
-                  <div className="mt-2 p-2.5 bg-rose-50/70 border border-rose-200/80 rounded-xl space-y-1 text-[11px] animate-fadeIn">
-                    <p className="font-bold text-rose-700 text-[10px] uppercase tracking-wider">
-                      Password Requirements:
-                    </p>
-                    <div className="grid grid-cols-2 gap-1">
-                      <div className={`flex items-center gap-1.5 ${passwordCriteria.minLength ? 'text-emerald-700 font-semibold' : 'text-rose-600'}`}>
-                        <span>{passwordCriteria.minLength ? '✓' : '✕'}</span>
-                        <span>8+ Characters</span>
-                      </div>
-                      <div className={`flex items-center gap-1.5 ${passwordCriteria.hasUpper ? 'text-emerald-700 font-semibold' : 'text-rose-600'}`}>
-                        <span>{passwordCriteria.hasUpper ? '✓' : '✕'}</span>
-                        <span>Uppercase (A-Z)</span>
-                      </div>
-                      <div className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber ? 'text-emerald-700 font-semibold' : 'text-rose-600'}`}>
-                        <span>{passwordCriteria.hasNumber ? '✓' : '✕'}</span>
-                        <span>1 Number (0-9)</span>
-                      </div>
-                      <div className={`flex items-center gap-1.5 ${passwordCriteria.hasSpecial ? 'text-emerald-700 font-semibold' : 'text-rose-600'}`}>
-                        <span>{passwordCriteria.hasSpecial ? '✓' : '✕'}</span>
-                        <span>Special (!@#$)</span>
-                      </div>
-                    </div>
-                  </div>
                 )}
               </div>
 

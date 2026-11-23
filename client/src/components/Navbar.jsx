@@ -15,7 +15,8 @@ import {
   Smartphone,
   Download,
   Receipt,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -25,7 +26,8 @@ import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import RoyalLogo from './RoyalLogo';
 
 export default function Navbar() {
-  const { isCustomerLoggedIn, customerUser, customerLogout, openOtpModal } = useAuth();
+  const { isCustomerLoggedIn, customerUser, customerLogout, isAdminLoggedIn, adminUser } = useAuth();
+  const isAdmin = isAdminLoggedIn || customerUser?.role === 'admin';
   const { openCart, cartTotalQuantity } = useCart();
   const { settings, whatsappNumber } = useSettings();
   const navigate = useNavigate();
@@ -292,6 +294,18 @@ export default function Navbar() {
               <span>Install App</span>
             </button>
 
+            {/* Admin Quick Switch Button (If logged in as admin) */}
+            {isAdmin && (
+              <Link
+                to="/admin/dashboard"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all shadow-2xs"
+                title="Go to Admin Dashboard"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Admin Console</span>
+              </Link>
+            )}
+
             {/* Customer Auth / Name Badge in Top Navbar */}
             {isCustomerLoggedIn ? (
               <div className="relative">
@@ -306,6 +320,11 @@ export default function Navbar() {
                   <span className="max-w-[110px] truncate font-extrabold text-slate-800">
                     {customerUser?.name || 'Customer'}
                   </span>
+                  {isAdmin && (
+                    <span className="px-1.5 py-0.2 bg-emerald-600 text-white text-[9px] rounded-full uppercase font-black tracking-wider">
+                      Admin
+                    </span>
+                  )}
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                 </button>
 
@@ -313,10 +332,27 @@ export default function Navbar() {
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-fadeIn">
                     <div className="px-4 py-2.5 border-b border-slate-100">
-                      <p className="text-xs font-black text-slate-900 truncate">{customerUser?.name}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-black text-slate-900 truncate">{customerUser?.name}</p>
+                        {isAdmin && (
+                          <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[9px] rounded-full font-bold uppercase">
+                            Admin
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">{customerUser?.mobile_number}</p>
                     </div>
                     <div className="py-1">
+                      {isAdmin && (
+                        <Link
+                          to="/admin/dashboard"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="w-full text-left px-4 py-2 text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 flex items-center gap-2.5 font-bold transition-colors border-b border-slate-100"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
                       <Link
                         to="/orders"
                         onClick={() => setIsUserMenuOpen(false)}
@@ -646,6 +682,22 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link
+                to="/admin/dashboard"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-xl bg-gray-900 text-white text-xs font-bold flex items-center justify-between transition-colors shadow-md border border-emerald-500/30"
+              >
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Admin Dashboard</span>
+                </div>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full uppercase font-black tracking-wider">
+                  Admin
+                </span>
+              </Link>
+            )}
+
             {isCustomerLoggedIn && (
               <Link
                 to="/orders"

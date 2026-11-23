@@ -44,11 +44,21 @@ export function AuthProvider({ children }) {
     }
   }, [adminUser, adminToken]);
 
-  // Customer Mobile + Password methods
+  // Customer Mobile + Password methods with Role-Based Access Control
   const customerLogin = async (mobileNumber, password, countryCode = '+91') => {
     const res = await api.post('/auth/login', { mobileNumber, password, countryCode });
-    setCustomerUser(res.data.user);
-    setCustomerToken(res.data.token);
+    const { user, admin, role, token, adminToken } = res.data;
+
+    // If logged in as admin, set admin auth credentials simultaneously
+    if (role === 'admin' || user?.role === 'admin') {
+      const effectiveAdminToken = adminToken || token;
+      const effectiveAdminUser = admin || { id: user?.id, username: user?.name, role: 'admin' };
+      setAdminUser(effectiveAdminUser);
+      setAdminToken(effectiveAdminToken);
+    }
+
+    setCustomerUser(user);
+    setCustomerToken(token);
     return res.data;
   };
 
@@ -124,11 +134,27 @@ export function AuthProvider({ children }) {
     setOnOtpSuccessCallback(null);
   };
 
-  // Admin methods
-  const adminLogin = async (username, password) => {
-    const res = await api.post('/admin/login', { username, password });
-    setAdminUser(res.data.admin);
-    setAdminToken(res.data.token);
+  // Admin methods (Accepts Mobile Number or Username + Password)
+  const adminLogin = async (identifier, password, countryCode = '+91') => {
+    const trimmed = (identifier || '').toString().trim();
+    const hasDigits = /\d{7,}/.test(trimmed);
+    const payload = hasDigits
+      ? { mobileNumber: trimmed, countryCode, password }
+      : { username: trimmed, password };
+
+    const res = await api.post('/admin/login', payload);
+    const { admin, user, token, adminToken } = res.data;
+
+    const effectiveAdminToken = adminToken || token;
+    const effectiveAdminUser = admin || (user ? { id: user.id, username: user.name, role: 'admin' } : null);
+
+    setAdminUser(effectiveAdminUser);
+    setAdminToken(effectiveAdminToken);
+
+    if (user) {
+      setCustomerUser(user);
+      setCustomerToken(token);
+    }
     return res.data;
   };
 
