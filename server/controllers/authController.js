@@ -296,12 +296,27 @@ async function loginCustomer(req, res, next) {
       user = userRows[0];
     } else {
       // Check admins table directly
-      const [adminRows] = await pool.execute(
-        'SELECT * FROM admins WHERE mobile_number = ? OR username = ?',
-        [normalized, mobileNumber.trim()]
-      );
-      if (adminRows.length > 0) {
-        adminRecord = adminRows[0];
+      try {
+        const [adminRows] = await pool.execute(
+          'SELECT * FROM admins WHERE mobile_number = ? OR username = ?',
+          [normalized, mobileNumber.trim()]
+        );
+        if (adminRows.length > 0) {
+          adminRecord = adminRows[0];
+        }
+      } catch (adminErr) {
+        if (adminErr.code === 'ER_BAD_FIELD_ERROR' || (adminErr.message && adminErr.message.includes('mobile_number'))) {
+          await pool.initDatabaseSchema?.();
+          const [adminRows] = await pool.execute(
+            'SELECT * FROM admins WHERE username = ?',
+            [mobileNumber.trim()]
+          );
+          if (adminRows.length > 0) {
+            adminRecord = adminRows[0];
+          }
+        } else {
+          throw adminErr;
+        }
       }
     }
 

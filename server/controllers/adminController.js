@@ -28,11 +28,21 @@ async function adminLogin(req, res, next) {
 
     // 1. Check in admins table by username or mobile_number
     if (normalizedMobile) {
-      const [admins] = await pool.execute(
-        'SELECT * FROM admins WHERE mobile_number = ? OR username = ?',
-        [normalizedMobile, trimmed]
-      );
-      if (admins.length > 0) admin = admins[0];
+      try {
+        const [admins] = await pool.execute(
+          'SELECT * FROM admins WHERE mobile_number = ? OR username = ?',
+          [normalizedMobile, trimmed]
+        );
+        if (admins.length > 0) admin = admins[0];
+      } catch (colErr) {
+        if (colErr.code === 'ER_BAD_FIELD_ERROR' || (colErr.message && colErr.message.includes('mobile_number'))) {
+          await pool.initDatabaseSchema?.();
+          const [admins] = await pool.execute('SELECT * FROM admins WHERE username = ?', [trimmed]);
+          if (admins.length > 0) admin = admins[0];
+        } else {
+          throw colErr;
+        }
+      }
     } else {
       const [admins] = await pool.execute('SELECT * FROM admins WHERE username = ?', [trimmed]);
       if (admins.length > 0) admin = admins[0];
@@ -149,10 +159,25 @@ async function changePassword(req, res, next) {
 async function getAdminProfile(req, res, next) {
   try {
     const adminId = req.admin.id;
-    const [rows] = await pool.execute(
-      'SELECT id, username, mobile_number, role, created_at FROM admins WHERE id = ?',
-      [adminId]
-    );
+    let rows = [];
+    try {
+      const [resultRows] = await pool.execute(
+        'SELECT id, username, mobile_number, role, created_at FROM admins WHERE id = ?',
+        [adminId]
+      );
+      rows = resultRows;
+    } catch (dbErr) {
+      if (dbErr.code === 'ER_BAD_FIELD_ERROR' || (dbErr.message && dbErr.message.includes('mobile_number'))) {
+        await pool.initDatabaseSchema?.();
+        const [resultRows] = await pool.execute(
+          'SELECT id, username, mobile_number, role, created_at FROM admins WHERE id = ?',
+          [adminId]
+        );
+        rows = resultRows;
+      } else {
+        throw dbErr;
+      }
+    }
 
     if (rows.length === 0) {
       return errorResponse(res, 'Admin account not found', 404);
@@ -184,20 +209,49 @@ async function updateAdminProfile(req, res, next) {
 
     const normalized = normalizeMobileNumber(mobileNumber.trim(), countryCode);
 
-    // Check if another admin has this mobile number
-    const [existingAdmins] = await pool.execute(
-      'SELECT id FROM admins WHERE mobile_number = ? AND id != ?',
-      [normalized, adminId]
-    );
+    // Check if another admin has this mobile number (with auto-healing if column is missing)
+    let existingAdmins = [];
+    try {
+      const [rows] = await pool.execute(
+        'SELECT id FROM admins WHERE mobile_number = ? AND id != ?',
+        [normalized, adminId]
+      );
+      existingAdmins = rows;
+    } catch (dbErr) {
+      if (dbErr.code === 'ER_BAD_FIELD_ERROR' || (dbErr.message && dbErr.message.includes('mobile_number'))) {
+        console.warn('Auto-healing: mobile_number column missing in admins table, creating now...');
+        await pool.initDatabaseSchema?.();
+        const [rows] = await pool.execute(
+          'SELECT id FROM admins WHERE mobile_number = ? AND id != ?',
+          [normalized, adminId]
+        );
+        existingAdmins = rows;
+      } else {
+        throw dbErr;
+      }
+    }
+
     if (existingAdmins.length > 0) {
       return errorResponse(res, 'This mobile number is already assigned to another admin account.', 409);
     }
 
     // 1. Update admins table
-    await pool.execute(
-      'UPDATE admins SET username = ?, mobile_number = ? WHERE id = ?',
-      [username.trim(), normalized, adminId]
-    );
+    try {
+      await pool.execute(
+        'UPDATE admins SET username = ?, mobile_number = ? WHERE id = ?',
+        [username.trim(), normalized, adminId]
+      );
+    } catch (upErr) {
+      if (upErr.code === 'ER_BAD_FIELD_ERROR' || (upErr.message && upErr.message.includes('mobile_number'))) {
+        await pool.initDatabaseSchema?.();
+        await pool.execute(
+          'UPDATE admins SET username = ?, mobile_number = ? WHERE id = ?',
+          [username.trim(), normalized, adminId]
+        );
+      } else {
+        throw upErr;
+      }
+    }
 
     // 2. Also sync with users table so mobile login works everywhere
     const [usersWithMobile] = await pool.execute('SELECT id, role FROM users WHERE mobile_number = ?', [normalized]);
