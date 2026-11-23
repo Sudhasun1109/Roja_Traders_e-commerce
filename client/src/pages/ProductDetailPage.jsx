@@ -18,6 +18,7 @@ import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import ProductCard from '../components/ProductCard';
 
 export default function ProductDetailPage() {
@@ -194,9 +195,13 @@ export default function ProductDetailPage() {
             {/* Primary Large Image */}
             <div className="relative aspect-square rounded-3xl bg-slate-50 overflow-hidden border border-slate-200/80 shadow-2xs group">
               <img
-                src={selectedImage || 'https://via.placeholder.com/600'}
+                src={getImageUrl(selectedImage)}
                 alt={product.product_name}
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                }}
               />
 
               {/* Badges on Top of Image */}
@@ -234,7 +239,15 @@ export default function ProductDetailPage() {
                         : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img.image_url} alt="thumbnail" className="w-full h-full object-cover" />
+                    <img
+                      src={getImageUrl(img.image_url)}
+                      alt="thumbnail"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                      }}
+                    />
                   </button>
                 ))}
               </div>

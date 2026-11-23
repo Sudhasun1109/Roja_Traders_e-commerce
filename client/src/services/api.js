@@ -1,8 +1,16 @@
 
 import axios from 'axios';
 
+// Resolve API base URL with fallback to the live Render backend in production
+const rawApiUrl =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://whatsapp-ecommerce-backend-y08o.onrender.com' : '');
+const cleanBaseUrl = rawApiUrl ? rawApiUrl.replace(/\/+$/, '') : '';
+const apiBaseURL = cleanBaseUrl ? `${cleanBaseUrl}/api` : '/api';
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: apiBaseURL,
+  timeout: 30000, // 30s to comfortably tolerate Render free-tier wake-up cold starts
   headers: {
     'Content-Type': 'application/json'
   }

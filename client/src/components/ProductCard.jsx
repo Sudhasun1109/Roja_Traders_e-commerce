@@ -4,6 +4,7 @@ import { MessageCircle, ShoppingBag, Eye, Check, AlertCircle } from 'lucide-reac
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import api from '../services/api';
 
 export default function ProductCard({ product }) {
@@ -73,10 +74,14 @@ export default function ProductCard({ product }) {
       {/* Image Container */}
       <Link to={`/products/${product.id}`} className="relative block aspect-square bg-slate-50 overflow-hidden">
         <img
-          src={product.primary_image || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80'}
+          src={getImageUrl(product.primary_image)}
           alt={product.product_name}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+          }}
         />
 
         {/* Badges */}

@@ -16,10 +16,6 @@ npm-debug.log*
 dist/
 client/dist/
 
-# Uploaded dynamic media
-server/uploads/*
-!server/uploads/.gitkeep
-
 # OS files
 .DS_Store
 Thumbs.db

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import Pagination from '../components/Pagination';
 
 export default function StockManagement() {
@@ -316,9 +317,13 @@ export default function StockManagement() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={item.primary_image || 'https://via.placeholder.com/80'}
+                              src={getImageUrl(item.primary_image)}
                               alt={item.product_name}
                               className="w-10 h-10 object-cover rounded-xl bg-gray-100 border border-gray-200"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                              }}
                             />
                             <span className="font-bold text-gray-900">{item.product_name}</span>
                           </div>

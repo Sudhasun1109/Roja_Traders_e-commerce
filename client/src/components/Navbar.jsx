@@ -21,6 +21,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useSettings } from '../context/SettingsContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import RoyalLogo from './RoyalLogo';
 
 export default function Navbar() {
@@ -228,9 +229,13 @@ export default function Navbar() {
                           className="w-full p-2.5 hover:bg-emerald-50/70 flex items-center gap-3 transition-colors text-left cursor-pointer group"
                         >
                           <img
-                            src={item.primary_image}
+                            src={getImageUrl(item.primary_image)}
                             alt={item.product_name}
                             className="w-10 h-10 rounded-xl object-cover bg-slate-100 shrink-0 border border-slate-200 group-hover:border-emerald-300"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                            }}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
@@ -574,9 +579,13 @@ export default function Navbar() {
                           className="w-full p-2.5 hover:bg-emerald-50/70 flex items-center gap-3 text-left"
                         >
                           <img
-                            src={item.primary_image}
+                            src={getImageUrl(item.primary_image)}
                             alt={item.product_name}
                             className="w-9 h-9 rounded-lg object-cover bg-slate-100 shrink-0 border border-slate-200"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                            }}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">

@@ -14,6 +14,7 @@ import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import OfferPosterCarousel from '../components/OfferPosterCarousel';
 import { useSettings } from '../context/SettingsContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 
 export default function HomePage() {
   const { settings, whatsappNumber } = useSettings();
@@ -180,9 +181,13 @@ export default function HomePage() {
                     className="flex items-center gap-3.5 bg-white/10 hover:bg-white/15 border border-white/15 hover:border-emerald-400/50 rounded-2xl p-3 pr-5 shrink-0 transition-all duration-300 hover:scale-[1.03] backdrop-blur-md shadow-lg group text-left"
                   >
                     <img
-                      src={prod.primary_image || (prod.images && prod.images[0]?.image_url) || 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=400'}
+                      src={getImageUrl(prod.primary_image || (prod.images && prod.images[0]?.image_url))}
                       alt={prod.product_name}
                       className="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-white"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                      }}
                     />
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white max-w-[200px] sm:max-w-[230px] truncate group-hover:text-emerald-300 transition-colors">
@@ -214,9 +219,13 @@ export default function HomePage() {
                     className="flex items-center gap-3.5 bg-white/10 hover:bg-white/15 border border-white/15 hover:border-emerald-400/50 rounded-2xl p-3 pr-5 shrink-0 transition-all duration-300 hover:scale-[1.03] backdrop-blur-md shadow-lg group text-left"
                   >
                     <img
-                      src={prod.primary_image || (prod.images && prod.images[0]?.image_url) || 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=400'}
+                      src={getImageUrl(prod.primary_image || (prod.images && prod.images[0]?.image_url))}
                       alt={prod.product_name}
                       className="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-white"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                      }}
                     />
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white max-w-[200px] sm:max-w-[230px] truncate group-hover:text-emerald-300 transition-colors">

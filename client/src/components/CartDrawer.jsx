@@ -17,6 +17,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 import api from '../services/api';
 
 export default function CartDrawer() {
@@ -205,9 +206,13 @@ export default function CartDrawer() {
                 >
                   {/* Thumbnail */}
                   <img
-                    src={item.primary_image || 'https://via.placeholder.com/150'}
+                    src={getImageUrl(item.primary_image)}
                     alt={item.product_name}
                     className="w-20 h-20 object-cover rounded-xl bg-slate-50 shrink-0 border border-slate-200/60"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                    }}
                   />
 
                   {/* Details */}

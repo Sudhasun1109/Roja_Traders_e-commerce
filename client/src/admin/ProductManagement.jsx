@@ -16,7 +16,7 @@ import {
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Pagination from '../components/Pagination';
-import { convertGoogleDriveUrl } from '../utils/urlHelper';
+import { convertGoogleDriveUrl, getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 
 export default function ProductManagement() {
   const { success, error, warning } = useToast();
@@ -396,9 +396,13 @@ export default function ProductManagement() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={p.primary_image || 'https://via.placeholder.com/80'}
+                          src={getImageUrl(p.primary_image)}
                           alt={p.product_name}
                           className="w-10 h-10 object-cover rounded-xl bg-gray-100 shrink-0 border border-gray-200"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                          }}
                         />
                         <div>
                           <p className="font-bold text-gray-900 line-clamp-1">{p.product_name}</p>
