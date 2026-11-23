@@ -1,3 +1,4 @@
+
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -10,6 +11,12 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'whatsapp_ecommerce',
   port: parseInt(process.env.DB_PORT || '3306', 10),
+
+  // Enable SSL for TiDB Cloud
+  ssl: process.env.DB_HOST
+    ? { minVersion: 'TLSv1.2' }
+    : undefined,
+
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -18,14 +25,21 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
-// Test connection on startup
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ Connected successfully to MySQL database:', process.env.DB_NAME);
+
+    console.log(
+      '✅ Connected successfully to MySQL database:',
+      process.env.DB_NAME
+    );
+
     connection.release();
   } catch (error) {
-    console.error('❌ Failed to connect to MySQL database:', error.message);
+    console.error(
+      '❌ Failed to connect to MySQL database:',
+      error.message
+    );
   }
 }
 
