@@ -1,0 +1,52 @@
+{
+  "name": "Roja Traders - Quality Everyday Provisions",
+  "short_name": "Roja Traders",
+  "description": "Direct WhatsApp Orders, Everyday Provisions, Fresh Groceries & Household Essentials",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#06241a",
+  "categories": ["shopping", "food", "lifestyle"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/logo-rt.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop Products",
+      "short_name": "Products",
+      "description": "Browse provisions and grocery catalog",
+      "url": "/products",
+      "icons": [{ "src": "/logo-rt.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Categories",
+      "short_name": "Categories",
+      "description": "Browse product categories",
+      "url": "/categories",
+      "icons": [{ "src": "/logo-rt.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "description": "View previous WhatsApp orders and bills",
+      "url": "/orders",
+      "icons": [{ "src": "/logo-rt.svg", "sizes": "192x192" }]
+    }
+  ]
+}

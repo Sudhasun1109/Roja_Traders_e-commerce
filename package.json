@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-ecommerce-showcase",
+  "version": "1.0.0",
+  "description": "WhatsApp-Based E-Commerce Product Showcase Website",
+  "scripts": {
+    "server": "cd server && npm start",
+    "server:dev": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "seed": "cd server && npm run seed",
+    "dev": "node -e \"console.log('To run in dev: Terminal 1: cd server && npm start | Terminal 2: cd client && npm run dev')\""
+  },
+  "keywords": ["whatsapp", "ecommerce", "showcase", "react", "express", "mysql"],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#CA9E5A" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#996515" />
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#022c22" />
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" fill="url(#bg)" stroke="url(#gold)" stroke-width="6" />
+  <circle cx="100" cy="100" r="84" fill="none" stroke="url(#gold)" stroke-width="2" />
+  <!-- Crown -->
+  <path d="M80,50 L85,38 L100,45 L115,38 L120,50 Z" fill="url(#gold)" />
+  <!-- Monogram T -->
+  <path d="M80,72 L132,72 L132,80 L114,80 L114,142 L98,142 L98,80 L80,80 Z" fill="url(#gold)" opacity="0.9" />
+  <!-- Monogram R -->
+  <path d="M68,144 L68,78 L110,78 C124,78 132,86 132,98 C132,108 124,115 112,116 L130,144 L114,144 L98,118 L84,118 L84,144 Z M84,90 L84,108 L104,108 C112,108 116,104 116,98 C116,92 112,90 104,90 Z" fill="#FFF8DC" stroke="#805300" stroke-width="1.5" />
+</svg>
