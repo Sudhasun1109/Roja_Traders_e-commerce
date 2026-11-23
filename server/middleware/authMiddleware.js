@@ -17,7 +17,7 @@ async function authenticateCustomer(req, res, next) {
 
     // Fetch user from DB to ensure still active
     const [rows] = await pool.execute(
-      'SELECT id, name, mobile_number, is_verified, status FROM users WHERE id = ?',
+      'SELECT id, name, mobile_number, role, is_verified, status FROM users WHERE id = ?',
       [decoded.userId]
     );
 
@@ -50,7 +50,7 @@ async function optionalCustomerAuth(req, res, next) {
       const token = authHeader.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'customer_jwt_secret_key_whatsapp_showcase_2026');
       const [rows] = await pool.execute(
-        'SELECT id, name, mobile_number, is_verified, status FROM users WHERE id = ?',
+        'SELECT id, name, mobile_number, role, is_verified, status FROM users WHERE id = ?',
         [decoded.userId]
       );
       if (rows && rows.length > 0 && rows[0].status === 'active') {

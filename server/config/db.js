@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 
   // Enable SSL for TiDB Cloud
   ssl: process.env.DB_HOST
-    ? { minVersion: 'TLSv1.2' }
+    ? { minVersion: 'TLSv1.2', rejectUnauthorized: false }
     : undefined,
 
   waitForConnections: true,

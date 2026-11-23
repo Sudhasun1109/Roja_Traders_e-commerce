@@ -2,9 +2,9 @@
 USE `whatsapp_ecommerce`;
 
 -- 1. Default Admin User: username: admin / password: admin123
-INSERT INTO `admins` (`id`, `username`, `password`, `role`) VALUES
-(1, 'admin', '$2a$10$w8bgy3VhFzGuTPHDcpVmCem3xs8q0OIAnEgOTwNgkZqV/TgDexjNm', 'admin')
-ON DUPLICATE KEY UPDATE `username` = VALUES(`username`);
+INSERT INTO `admins` (`id`, `username`, `mobile_number`, `password`, `role`) VALUES
+(1, 'admin', '+919876543210', '$2a$10$w8bgy3VhFzGuTPHDcpVmCem3xs8q0OIAnEgOTwNgkZqV/TgDexjNm', 'admin')
+ON DUPLICATE KEY UPDATE `username` = VALUES(`username`), `mobile_number` = VALUES(`mobile_number`);
 
 -- 2. Website Settings
 INSERT INTO `website_settings` (`id`, `website_name`, `logo_url`, `whatsapp_number`, `contact_number`, `address`, `email`, `description`, `social_links`, `footer_text`) VALUES

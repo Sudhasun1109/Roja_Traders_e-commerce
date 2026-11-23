@@ -4,15 +4,18 @@
 CREATE DATABASE IF NOT EXISTS `whatsapp_ecommerce` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `whatsapp_ecommerce`;
 
--- 1. Users Table (Customer mobile authentication)
+-- 1. Users Table (Customer & Admin mobile authentication)
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) DEFAULT 'Customer',
   `mobile_number` VARCHAR(20) NOT NULL UNIQUE,
+  `role` VARCHAR(20) NOT NULL DEFAULT 'customer',
+  `password` VARCHAR(255) DEFAULT NULL,
   `is_verified` BOOLEAN DEFAULT FALSE,
   `status` ENUM('active', 'inactive') DEFAULT 'active',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_users_mobile` (`mobile_number`),
+  INDEX `idx_users_role` (`role`),
   INDEX `idx_users_status` (`status`)
 ) ENGINE=InnoDB;
 
@@ -20,9 +23,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `username` VARCHAR(50) NOT NULL UNIQUE,
+  `mobile_number` VARCHAR(20) DEFAULT NULL,
   `password` VARCHAR(255) NOT NULL,
   `role` VARCHAR(20) DEFAULT 'admin',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_admins_mobile` (`mobile_number`)
 ) ENGINE=InnoDB;
 
 -- 3. Categories Table
