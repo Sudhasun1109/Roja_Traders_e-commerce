@@ -9,7 +9,8 @@ import {
   Printer,
   HelpCircle,
   Building2,
-  Receipt
+  Receipt,
+  QrCode
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -32,6 +33,7 @@ export default function InvoiceSettings() {
     tax_rate: 0,
     tax_label: 'GST / Tax',
     upi_id: '9597993402@upi',
+    payment_qr_url: '',
     terms: '1. Goods once sold will not be returned without bill.\n2. Please inspect all items upon receipt.\n3. Thank you for choosing Roja Traders!',
     footer_note: 'Direct WhatsApp Order | Genuine Stock Guaranteed'
   });
@@ -359,6 +361,55 @@ export default function InvoiceSettings() {
                   />
                 </div>
 
+                {/* Editable Payment QR Code field */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <QrCode className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Payment QR Code (Editable Image / URL)</span>
+                    </label>
+                    {formData.upi_id && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const autoQr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${formData.upi_id}&pn=${formData.company_name || 'Roja Traders'}&cu=INR`)}`;
+                          setFormData(prev => ({ ...prev, payment_qr_url: autoQr }));
+                        }}
+                        className="text-[10px] text-emerald-700 hover:text-emerald-900 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/80 hover:bg-emerald-100 transition-colors cursor-pointer"
+                      >
+                        ⚡ Generate QR from UPI
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    name="payment_qr_url"
+                    value={formData.payment_qr_url || ''}
+                    onChange={handleChange}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-emerald-600 focus:outline-none font-mono"
+                    placeholder="Enter custom QR image URL or click 'Generate QR from UPI'"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    Upload or enter your GPay / PhonePe / Paytm QR image URL. This QR code will appear directly on customer invoices.
+                  </span>
+
+                  {/* Live QR Preview in Form */}
+                  {(formData.payment_qr_url || formData.upi_id) && (
+                    <div className="mt-2.5 p-3 bg-emerald-50/50 border border-emerald-200/70 rounded-2xl flex items-center gap-3">
+                      <img
+                        src={formData.payment_qr_url || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${formData.upi_id}&pn=${formData.company_name || 'Roja Traders'}&cu=INR`)}`}
+                        alt="Payment QR"
+                        className="w-16 h-16 rounded-xl border border-emerald-300 bg-white object-contain p-1 shrink-0 shadow-2xs"
+                      />
+                      <div className="text-[11px] leading-tight">
+                        <p className="font-bold text-slate-900">Payment QR Code Active</p>
+                        <p className="text-slate-500 font-mono mt-0.5">{formData.upi_id || 'UPI Payment'}</p>
+                        <p className="text-[10px] text-emerald-700 font-semibold mt-1">✓ Displayed on digital bill</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Terms & Conditions</label>
                   <textarea
@@ -504,10 +555,21 @@ export default function InvoiceSettings() {
                 </div>
               </div>
 
-              {/* Payment & Terms in Preview */}
-              {formData.upi_id && (
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono">
-                  Payment UPI: <strong className="text-emerald-800">{formData.upi_id}</strong>
+              {/* Payment QR & Details in Preview */}
+              {(formData.payment_qr_url || formData.upi_id) && (
+                <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-200 flex items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">
+                      Scan & Pay (UPI):
+                    </span>
+                    <p className="font-mono text-xs font-bold text-emerald-800">{formData.upi_id || 'UPI Payment'}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">GPay / PhonePe / Paytm / Any UPI</p>
+                  </div>
+                  <img
+                    src={formData.payment_qr_url || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${formData.upi_id}&pn=${formData.company_name || 'Roja Traders'}&cu=INR`)}`}
+                    alt="Payment QR Code"
+                    className="w-14 h-14 rounded-lg border border-emerald-300 bg-white object-contain p-1 shrink-0"
+                  />
                 </div>
               )}
 

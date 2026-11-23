@@ -16,7 +16,8 @@ import {
   Download,
   Image as ImageIcon,
   Copy,
-  ExternalLink
+  ExternalLink,
+  QrCode
 } from 'lucide-react';
 import { toPng, toBlob } from 'html-to-image';
 import api from '../services/api';
@@ -277,13 +278,26 @@ export default function InvoicePage() {
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link
-            to="/products"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-emerald-800 transition-colors bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Store</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-emerald-800 transition-colors bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Store</span>
+            </Link>
+
+            {localStorage.getItem('adminToken') && (
+              <Link
+                to="/admin/invoice-settings"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors"
+                title="Edit QR Code & Template in Admin Console"
+              >
+                <QrCode className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Edit QR / Bill</span>
+              </Link>
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center gap-2">
             {/* 1. Share Image to WhatsApp */}
@@ -417,19 +431,39 @@ export default function InvoicePage() {
             </p>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 flex flex-col justify-between">
+          <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200/80 flex items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                Order Reference & Mode:
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5">
+                Scan & Pay (UPI):
               </span>
-              <p className="text-xs font-semibold text-slate-700">
+              <p className="text-xs font-bold text-slate-900">
                 Direct WhatsApp Verified Order
               </p>
-            </div>
-            {settings.upi_id && (
-              <p className="text-[11px] text-slate-600 mt-2 font-mono">
-                Payment UPI: <strong className="text-emerald-800">{settings.upi_id}</strong>
+              {settings.upi_id && (
+                <p className="text-xs text-slate-700 mt-1 font-mono">
+                  UPI: <strong className="text-emerald-800 font-extrabold">{settings.upi_id}</strong>
+                </p>
+              )}
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Scan using GPay, PhonePe, Paytm, or any UPI App
               </p>
+            </div>
+            {(settings.payment_qr_url || settings.upi_id) && (
+              <div className="text-center shrink-0">
+                <img
+                  src={
+                    settings.payment_qr_url ||
+                    `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+                      `upi://pay?pa=${settings.upi_id || '9597993402@upi'}&pn=${encodeURIComponent(
+                        settings.company_name || 'Roja Traders'
+                      )}&cu=INR`
+                    )}`
+                  }
+                  alt="Official Payment QR"
+                  className="w-20 h-20 rounded-xl border border-emerald-300 bg-white object-contain p-1 shadow-xs"
+                />
+                <span className="text-[9px] font-bold text-emerald-800 uppercase block mt-1 tracking-wider">Payment QR</span>
+              </div>
             )}
           </div>
         </div>

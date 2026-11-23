@@ -128,21 +128,28 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-6">
+      {/* Delivery Notice Bar for Customers */}
+      <div className="bg-emerald-800 text-emerald-100 text-[11px] sm:text-xs py-1.5 px-3 text-center font-bold tracking-wide flex items-center justify-center gap-1.5 border-b border-emerald-900/40">
+        <span className="text-amber-300">📍</span>
+        <span>Delivery Exclusively to <strong className="text-white underline decoration-amber-400 font-extrabold">Tiruppur & Avinashi</strong> Only</span>
+        <span className="hidden sm:inline text-emerald-300/80">• Quick WhatsApp Order & Fast Delivery</span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-20 gap-1.5 sm:gap-6">
           {/* Logo & Brand Name */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-3 shrink-0 group min-w-0">
             {settings.logo_url && settings.logo_url !== '/logo-rt.svg' ? (
               <img
                 src={settings.logo_url}
                 alt={settings.website_name || 'Roja Traders'}
-                className="w-8 h-8 sm:w-11 sm:h-11 object-contain rounded-xl shadow-xs"
+                className="w-7 h-7 sm:w-11 sm:h-11 object-contain rounded-xl shadow-xs shrink-0"
               />
             ) : (
-              <RoyalLogo className="w-8 h-8 sm:w-11 sm:h-11 transition-transform group-hover:scale-105" />
+              <RoyalLogo className="w-7 h-7 sm:w-11 sm:h-11 transition-transform group-hover:scale-105 shrink-0" />
             )}
-            <div>
-              <span className="text-sm sm:text-xl font-black text-slate-900 tracking-tight block leading-tight group-hover:text-emerald-700 transition-colors">
+            <div className="min-w-0">
+              <span className="text-xs sm:text-base md:text-xl font-black text-slate-900 tracking-tight block leading-tight group-hover:text-emerald-700 transition-colors truncate max-w-[95px] sm:max-w-none">
                 {settings.website_name || 'Roja Traders'}
               </span>
               <span className="hidden sm:block text-[10px] font-semibold text-emerald-700 tracking-wider uppercase">
@@ -283,17 +290,7 @@ export default function Navbar() {
           </div>
 
           {/* Right Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Install App Button (Desktop) */}
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('trigger-install-app'))}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 transition-colors border border-slate-200/80 cursor-pointer"
-              title="Install Roja Traders App"
-            >
-              <Smartphone className="w-3.5 h-3.5 text-[#25D366]" />
-              <span>Install App</span>
-            </button>
-
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Admin Quick Switch Button (If logged in as admin) */}
             {isAdmin && (
               <Link
@@ -359,7 +356,7 @@ export default function Navbar() {
                         className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2.5 font-bold transition-colors"
                       >
                         <Receipt className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>My Orders & Status</span>
+                        <span>My Orders</span>
                       </Link>
                       <Link
                         to="/profile"
@@ -416,22 +413,21 @@ export default function Navbar() {
               <span>WhatsApp</span>
             </button>
 
-            {/* Mobile Logged in User Name Pill */}
+            {/* Mobile Logged in User Profile Avatar */}
             {isCustomerLoggedIn && (
-              <div className="flex md:hidden items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-xs font-black text-slate-900 shrink-0">
-                <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] font-bold">
-                  {customerUser?.name?.[0]?.toUpperCase() || 'U'}
-                </div>
-                <span className="max-w-[75px] truncate text-[11px] font-bold text-slate-800">
-                  {customerUser?.name || 'Customer'}
-                </span>
-              </div>
+              <Link
+                to="/profile"
+                className="flex md:hidden items-center justify-center w-7 h-7 rounded-full bg-emerald-700 text-white text-[10px] font-black shrink-0 shadow-xs border border-emerald-200 active:scale-95 transition-transform"
+                title={customerUser?.name || 'My Profile'}
+              >
+                {customerUser?.name?.[0]?.toUpperCase() || 'U'}
+              </Link>
             )}
 
-            {/* Mobile View: Search Bar Directly Nearby Cart */}
+            {/* Mobile View: Flexible Search Bar */}
             <div
               ref={mobileSearchRef}
-              className="flex md:hidden items-center flex-1 min-w-[130px] max-w-[260px] relative mx-1.5"
+              className="flex md:hidden items-center flex-1 min-w-0 max-w-[190px] relative mx-1"
             >
               <form onSubmit={handleSearchSubmit} className="w-full relative">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -706,7 +702,7 @@ export default function Navbar() {
               >
                 <div className="flex items-center gap-2.5">
                   <Receipt className="w-4 h-4 text-emerald-700" />
-                  <span>My Orders & Live Status</span>
+                  <span>My Orders</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-emerald-600" />
               </Link>

@@ -102,7 +102,10 @@ export default function HomePage() {
                 </div>
 
                 {/* Quick Micro-Perks */}
-                <div className="pt-2 flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-slate-300 font-medium border-t border-white/10 pt-4">
+                <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-5 text-xs text-slate-300 font-medium border-t border-white/10 pt-4">
+                  <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full">
+                    <span>📍</span> Delivery in Tiruppur & Avinashi Only
+                  </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="text-emerald-400 font-bold">✓</span> Direct WhatsApp Orders
                   </span>
@@ -154,7 +157,10 @@ export default function HomePage() {
               </div>
 
               {/* Quick Micro-Perks Centered */}
-              <div className="pt-2 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-300 font-medium border-t border-white/10 pt-4 max-w-xl mx-auto">
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-slate-300 font-medium border-t border-white/10 pt-4 max-w-xl mx-auto">
+                <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full">
+                  <span>📍</span> Delivery in Tiruppur & Avinashi Only
+                </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="text-emerald-400 font-bold">✓</span> Direct WhatsApp Orders
                 </span>
@@ -259,15 +265,11 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-slate-200/80">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-              <span>Handpicked Collection</span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Featured Essentials
+              Our Products
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Browse top picks across salts, cleaners, food items & rangoli powders.
+              Explore quality provisions, salts, cleaning supplies, and food essentials.
             </p>
           </div>
           <Link

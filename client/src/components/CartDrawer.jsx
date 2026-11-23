@@ -136,6 +136,12 @@ export default function CartDrawer() {
             </button>
           </div>
 
+          {/* Customer Viewpoint: Delivery Location Notice */}
+          <div className="mx-4 sm:mx-5 mt-3 p-2.5 bg-emerald-50/90 border border-emerald-200 rounded-2xl flex items-center gap-2 text-xs text-emerald-900 font-bold shadow-2xs">
+            <span className="text-sm">📍</span>
+            <span>Delivery available to <strong className="text-emerald-700 underline decoration-emerald-500">Tiruppur & Avinashi</strong> only</span>
+          </div>
+
           {/* Cart Content */}
           <div className="flex-1 overflow-y-auto p-5 space-y-3.5">
             {completedOrder ? (

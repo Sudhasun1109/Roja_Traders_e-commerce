@@ -124,9 +124,9 @@ export default function MyOrdersPage() {
         <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
           <Receipt className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-black text-slate-900">Track Your Orders & Live Status</h2>
+        <h2 className="text-xl font-black text-slate-900">Track Your Orders</h2>
         <p className="text-xs text-slate-500 mt-1.5 mb-6 leading-relaxed">
-          Please log in with your registered mobile number to view your past orders, real-time admin status updates, and digital invoices.
+          Please log in with your registered mobile number to view your past orders, status updates, and digital invoices.
         </p>
         <button
           onClick={() => navigate('/login?redirect=orders')}
@@ -140,14 +140,11 @@ export default function MyOrdersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-24 md:pb-12 animate-fadeIn">
-      {/* Top Banner with Real-time Status Sync */}
+      {/* Top Banner with Status Indicator */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <span>My Order History</span>
-            <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-              Live Status
-            </span>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            My Order History
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Past WhatsApp order enquiries for <strong className="text-slate-800">{customerUser?.name}</strong> ({customerUser?.mobile_number})
@@ -155,13 +152,12 @@ export default function MyOrdersPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* Live Sync Indicator */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-full text-xs font-semibold border border-emerald-200/80 shadow-2xs">
-            <span className="relative flex h-2 w-2">
+          {/* Status Pulse Indicator (Icon retained, text removed) */}
+          <div className="flex items-center justify-center p-2 bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200/80 shadow-2xs" title="Auto status sync active">
+            <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-[11px]">Real-time Status Sync</span>
           </div>
 
           {/* Refresh Button */}

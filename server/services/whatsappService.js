@@ -57,6 +57,7 @@ async function getInvoiceSettingsFromDB() {
         tax_rate: parseFloat(parsed.tax_rate || 0),
         tax_label: parsed.tax_label || 'GST / Tax',
         upi_id: parsed.upi_id || '9597993402@upi',
+        payment_qr_url: parsed.payment_qr_url || '',
         terms: parsed.terms || '1. Goods once sold will not be returned without bill.\n2. Please inspect all items upon receipt.\n3. Thank you for choosing Roja Traders!',
         footer_note: parsed.footer_note || 'Direct WhatsApp Order | Genuine Stock Guaranteed'
       };
@@ -79,6 +80,7 @@ async function getInvoiceSettingsFromDB() {
     tax_rate: 0,
     tax_label: 'GST / Tax',
     upi_id: '9597993402@upi',
+    payment_qr_url: '',
     terms: '1. Goods once sold will not be returned without bill.\n2. Please inspect all items upon receipt.\n3. Thank you for choosing Roja Traders!',
     footer_note: 'Direct WhatsApp Order | Genuine Stock Guaranteed'
   };

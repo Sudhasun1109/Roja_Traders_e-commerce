@@ -437,6 +437,7 @@ async function updateInvoiceSettings(req, res, next) {
       tax_rate,
       tax_label,
       upi_id,
+      payment_qr_url,
       terms,
       footer_note
     } = req.body;
@@ -459,6 +460,7 @@ async function updateInvoiceSettings(req, res, next) {
       tax_rate: Math.max(0, parseFloat(tax_rate || 0)),
       tax_label: (tax_label || 'GST / Tax').trim(),
       upi_id: (upi_id || '').trim(),
+      payment_qr_url: (payment_qr_url || '').trim(),
       terms: (terms || '').trim(),
       footer_note: (footer_note || '').trim()
     };
