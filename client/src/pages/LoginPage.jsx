@@ -71,9 +71,11 @@ export default function LoginPage() {
   } = useAuth();
 
   // If already logged in as admin, redirect directly to admin dashboard
-  if (isAdminLoggedIn) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (isAdminLoggedIn) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [isAdminLoggedIn, navigate]);
 
   // Redirect parameter: if user tried ordering without being logged in
   const isOrderRedirect = searchParams.get('redirect') === 'order';
