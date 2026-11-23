@@ -16,7 +16,8 @@ import {
   Download,
   Receipt,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  MapPin
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -130,7 +131,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       {/* Delivery Notice Bar for Customers */}
       <div className="bg-emerald-800 text-emerald-100 text-[11px] sm:text-xs py-1.5 px-3 text-center font-bold tracking-wide flex items-center justify-center gap-1.5 border-b border-emerald-900/40">
-        <span className="text-amber-300">📍</span>
+        <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
         <span>Delivery Exclusively to <strong className="text-white underline decoration-amber-400 font-extrabold">Tiruppur & Avinashi</strong> Only</span>
         <span className="hidden sm:inline text-emerald-300/80">• Quick WhatsApp Order & Fast Delivery</span>
       </div>

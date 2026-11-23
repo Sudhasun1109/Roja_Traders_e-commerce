@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   FileText,
   ExternalLink,
-  Download
+  Download,
+  MapPin
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -138,7 +139,7 @@ export default function CartDrawer() {
 
           {/* Customer Viewpoint: Delivery Location Notice */}
           <div className="mx-4 sm:mx-5 mt-3 p-2.5 bg-emerald-50/90 border border-emerald-200 rounded-2xl flex items-center gap-2 text-xs text-emerald-900 font-bold shadow-2xs">
-            <span className="text-sm">📍</span>
+            <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
             <span>Delivery available to <strong className="text-emerald-700 underline decoration-emerald-500">Tiruppur & Avinashi</strong> only</span>
           </div>
 

@@ -104,7 +104,8 @@ export default function HomePage() {
                 {/* Quick Micro-Perks */}
                 <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-5 text-xs text-slate-300 font-medium border-t border-white/10 pt-4">
                   <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full">
-                    <span>📍</span> Delivery in Tiruppur & Avinashi Only
+                    <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                    <span>Delivery in Tiruppur & Avinashi Only</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="text-emerald-400 font-bold">✓</span> Direct WhatsApp Orders
@@ -159,7 +160,8 @@ export default function HomePage() {
               {/* Quick Micro-Perks Centered */}
               <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-slate-300 font-medium border-t border-white/10 pt-4 max-w-xl mx-auto">
                 <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full">
-                  <span>📍</span> Delivery in Tiruppur & Avinashi Only
+                  <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span>Delivery in Tiruppur & Avinashi Only</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="text-emerald-400 font-bold">✓</span> Direct WhatsApp Orders
