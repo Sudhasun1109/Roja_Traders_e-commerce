@@ -6,7 +6,7 @@ export default function AdminProtectedRoute() {
   const { isAdminLoggedIn } = useAuth();
 
   if (!isAdminLoggedIn) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;

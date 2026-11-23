@@ -20,6 +20,8 @@ router.get('/dashboard', adminController.getDashboardOverview);
 router.get('/live-visitors', adminController.getLiveVisitors);
 
 // Admin Profile & Security
+router.get('/profile', adminController.getAdminProfile);
+router.put('/profile', adminController.updateAdminProfile);
 router.put('/change-password', adminController.changePassword);
 
 // Product CRUD

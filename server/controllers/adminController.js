@@ -133,8 +133,123 @@ async function changePassword(req, res, next) {
     const newHash = await bcrypt.hash(newPassword, salt);
 
     await pool.execute('UPDATE admins SET password = ? WHERE id = ?', [newHash, admin.id]);
+    // Also sync password in users table for admin role
+    await pool.execute('UPDATE users SET password = ? WHERE role = "admin" OR mobile_number = ?', [newHash, admin.mobile_number]);
 
     return successResponse(res, {}, 'Password changed successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Admin: Get Profile
+ * GET /api/admin/profile
+ */
+async function getAdminProfile(req, res, next) {
+  try {
+    const adminId = req.admin.id;
+    const [rows] = await pool.execute(
+      'SELECT id, username, mobile_number, role, created_at FROM admins WHERE id = ?',
+      [adminId]
+    );
+
+    if (rows.length === 0) {
+      return errorResponse(res, 'Admin account not found', 404);
+    }
+
+    const admin = rows[0];
+    return successResponse(res, { admin }, 'Admin profile retrieved');
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Admin: Update Profile (Editable Mobile Number & Username)
+ * PUT /api/admin/profile
+ */
+async function updateAdminProfile(req, res, next) {
+  try {
+    const adminId = req.admin.id;
+    const { username, mobileNumber, countryCode = '+91' } = req.body;
+
+    if (!username || !username.trim()) {
+      return errorResponse(res, 'Username / Name is required', 400);
+    }
+
+    if (!mobileNumber || !mobileNumber.trim()) {
+      return errorResponse(res, 'Mobile number is required', 400);
+    }
+
+    const normalized = normalizeMobileNumber(mobileNumber.trim(), countryCode);
+
+    // Check if another admin has this mobile number
+    const [existingAdmins] = await pool.execute(
+      'SELECT id FROM admins WHERE mobile_number = ? AND id != ?',
+      [normalized, adminId]
+    );
+    if (existingAdmins.length > 0) {
+      return errorResponse(res, 'This mobile number is already assigned to another admin account.', 409);
+    }
+
+    // 1. Update admins table
+    await pool.execute(
+      'UPDATE admins SET username = ?, mobile_number = ? WHERE id = ?',
+      [username.trim(), normalized, adminId]
+    );
+
+    // 2. Also sync with users table so mobile login works everywhere
+    const [usersWithMobile] = await pool.execute('SELECT id, role FROM users WHERE mobile_number = ?', [normalized]);
+    if (usersWithMobile.length > 0) {
+      await pool.execute(
+        'UPDATE users SET role = "admin", name = ? WHERE id = ?',
+        [username.trim(), usersWithMobile[0].id]
+      );
+    } else {
+      const [adminUserInUsers] = await pool.execute('SELECT id FROM users WHERE role = "admin" OR id = 1 LIMIT 1');
+      if (adminUserInUsers.length > 0) {
+        await pool.execute(
+          'UPDATE users SET mobile_number = ?, name = ?, role = "admin" WHERE id = ?',
+          [normalized, username.trim(), adminUserInUsers[0].id]
+        );
+      } else {
+        const [adminRow] = await pool.execute('SELECT password FROM admins WHERE id = ?', [adminId]);
+        await pool.execute(
+          'INSERT INTO users (name, mobile_number, password, role, is_verified, status) VALUES (?, ?, ?, "admin", TRUE, "active")',
+          [username.trim(), normalized, adminRow[0]?.password || '']
+        );
+      }
+    }
+
+    // 3. Issue updated admin token
+    const token = jwt.sign(
+      { adminId, username: username.trim(), role: req.admin.role || 'admin' },
+      process.env.ADMIN_JWT_SECRET || 'admin_jwt_secret_key_whatsapp_showcase_2026',
+      { expiresIn: process.env.ADMIN_JWT_EXPIRES_IN || '1d' }
+    );
+
+    const updatedAdmin = {
+      id: adminId,
+      username: username.trim(),
+      mobile_number: normalized,
+      role: req.admin.role || 'admin'
+    };
+
+    return successResponse(
+      res,
+      {
+        admin: updatedAdmin,
+        user: {
+          id: adminId,
+          name: username.trim(),
+          mobile_number: normalized,
+          role: 'admin'
+        },
+        token
+      },
+      'Admin profile updated successfully! You can now use your new mobile number to log in.'
+    );
   } catch (error) {
     next(error);
   }
@@ -558,6 +673,8 @@ async function bulkDeleteUsers(req, res, next) {
 module.exports = {
   adminLogin,
   changePassword,
+  getAdminProfile,
+  updateAdminProfile,
   getDashboardOverview,
   getLiveVisitors,
   getUsers,

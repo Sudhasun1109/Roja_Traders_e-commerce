@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: whatsapp-ecommerce-backend-y08o
+    env: node
+    plan: free
+    buildCommand: npm install --prefix server
+    startCommand: node server/server.js
+
+routes:
+  - type: rewrite
+    source: /*
+    destination: /index.html

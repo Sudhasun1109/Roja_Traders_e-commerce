@@ -163,6 +163,11 @@ export function AuthProvider({ children }) {
     setAdminToken(null);
   };
 
+  const updateAdminProfileData = (updatedAdmin, newToken) => {
+    setAdminUser(updatedAdmin);
+    if (newToken) setAdminToken(newToken);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -186,7 +191,8 @@ export function AuthProvider({ children }) {
         adminToken,
         isAdminLoggedIn: !!adminToken && !!adminUser,
         adminLogin,
-        adminLogout
+        adminLogout,
+        updateAdminProfileData
       }}
     >
       {children}

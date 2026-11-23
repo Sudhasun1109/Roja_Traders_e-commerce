@@ -15,7 +15,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-950 text-slate-400 pt-16 pb-10 border-t border-slate-800 relative">
+    <footer className="bg-slate-950 text-slate-400 pt-16 pb-28 sm:pb-12 border-t border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
           {/* Brand info */}
@@ -100,22 +100,25 @@ export default function Footer() {
 
         {/* Bottom copyright & Developer Credit */}
         <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>{settings.footer_text || '© 2026 Roja Traders. All rights reserved.'}</p>
-          
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          {/* Developer Credit Button prominently visible and easily clickable */}
+          <div className="order-1 sm:order-2 flex flex-wrap items-center justify-center">
             <button
               onClick={() => setIsDevModalOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-slate-400 hover:text-white transition-all cursor-pointer group shadow-xs"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 text-slate-200 hover:text-white transition-all cursor-pointer group shadow-lg active:scale-95"
               title="Click to view Developer & Architecture Profile"
             >
-              <div className="w-5 h-5 rounded-full flex items-center justify-center bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 shrink-0">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center bg-emerald-950/90 border border-emerald-500/50 text-emerald-400 shrink-0">
                 <Code2 className="w-3 h-3" />
               </div>
-              <span className="text-[11px]">
-                Developed & Architecture by <strong className="text-emerald-400 group-hover:underline decoration-dotted underline-offset-2">Sudhasun</strong>
+              <span className="text-[12px] font-medium">
+                Developed & Architecture by <strong className="text-emerald-400 font-bold group-hover:underline decoration-dotted underline-offset-2">Sudhasun</strong>
               </span>
             </button>
           </div>
+
+          <p className="order-2 sm:order-1 text-center sm:text-left text-slate-500 text-[11px] sm:text-xs">
+            {settings.footer_text || '© 2026 Roja Traders. All rights reserved.'}
+          </p>
         </div>
       </div>
 

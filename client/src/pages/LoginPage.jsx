@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import {
   Eye,
   EyeOff,
@@ -66,8 +66,14 @@ export default function LoginPage() {
     customerRegister,
     verifyForgotPasswordMobile,
     changePasswordDirect,
-    isCustomerLoggedIn
+    isCustomerLoggedIn,
+    isAdminLoggedIn
   } = useAuth();
+
+  // If already logged in as admin, redirect directly to admin dashboard
+  if (isAdminLoggedIn) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   // Redirect parameter: if user tried ordering without being logged in
   const isOrderRedirect = searchParams.get('redirect') === 'order';
@@ -509,38 +515,6 @@ export default function LoginPage() {
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
                 Login to continue shopping with us.
-              </p>
-            </div>
-
-            {/* Role-Based Quick Demo Fill Helper */}
-            <div className="mb-5 p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 text-xs">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 text-emerald-900 font-semibold">
-                  <Sparkles className="w-4 h-4 text-[#25D366] shrink-0" />
-                  <span>Role-Based Demo:</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={handleAdminDemoFill}
-                    className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg shadow-2xs transition-all cursor-pointer flex items-center gap-1"
-                    title="Fill Admin Credentials"
-                  >
-                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                    <span>Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleQuickDemoFill}
-                    className="px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white text-[11px] font-bold rounded-lg shadow-2xs transition-all cursor-pointer"
-                    title="Fill Credentials"
-                  >
-                    <span>Customer</span>
-                  </button>
-                </div>
-              </div>
-              <p className="text-[10px] text-slate-500 mt-1 pl-5.5">
-                Admin mobile redirects to <strong>Admin Dashboard</strong>. Customer mobile accesses store.
               </p>
             </div>
 

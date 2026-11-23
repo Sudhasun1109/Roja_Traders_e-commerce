@@ -42,11 +42,11 @@ export default function App() {
       {/* Public Digital Invoice / Bill View & Print */}
       <Route path="/invoice/:invoiceNumber" element={<InvoicePage />} />
 
-      {/* Customer Authentication (Mobile + Password) */}
+      {/* Customer & Admin Unified Authentication (Mobile + Password with RBAC) */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Admin Authentication (Unprotected) */}
-      <Route path="/admin/login" element={<AdminLogin />} />
+      {/* Redirect old admin login path directly to unified login */}
+      <Route path="/admin/login" element={<Navigate to="/login" replace />} />
 
       {/* Admin Protected Console */}
       <Route path="/admin" element={<AdminProtectedRoute />}>
