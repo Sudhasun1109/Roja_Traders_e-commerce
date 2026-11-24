@@ -531,10 +531,10 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Shopping Cart Button */}
+            {/* Shopping Cart Button (Desktop & Tablet; mobile users access cart via fixed BottomNav) */}
             <button
               onClick={openCart}
-              className="relative flex items-center gap-2 py-2 px-3 sm:px-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 rounded-2xl transition-all shadow-xs cursor-pointer group"
+              className="hidden sm:flex relative items-center gap-2 py-2 px-3 sm:px-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 rounded-2xl transition-all shadow-xs cursor-pointer group"
               aria-label="Shopping Cart"
             >
               <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 group-hover:scale-110 transition-transform" />

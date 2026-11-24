@@ -39,7 +39,7 @@ async function createEnquiry(req, res, next) {
 
     // Check each product against database stock and price
     for (const item of items) {
-      const productId = item.productId || item.id;
+      const productId = item.productId || item.id || item.product_id;
       const requestedQty = parseInt(item.quantity || 1, 10);
 
       if (!productId || requestedQty <= 0) {
