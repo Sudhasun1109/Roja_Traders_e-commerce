@@ -50,7 +50,7 @@ export function getImageUrl(url, fallback = DEFAULT_PRODUCT_IMAGE) {
   if (trimmed.startsWith('/uploads')) {
     const backendBase =
       import.meta.env.VITE_API_URL ||
-      (import.meta.env.PROD ? 'https://whatsapp-ecommerce-backend-y08o.onrender.com' : '');
+      (import.meta.env.PROD ? 'https://whatsapp-ecommerce-backend-y08o.onrender.com' : 'http://localhost:5000');
     const cleanBase = backendBase ? backendBase.replace(/\/+$/, '') : '';
     return cleanBase ? `${cleanBase}${trimmed}` : trimmed;
   }

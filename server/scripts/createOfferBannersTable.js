@@ -24,10 +24,11 @@ async function createBannersTable() {
 
     console.log('✅ offer_banners table verified/created.');
 
-    // Check if banners exist, if not seed default high quality banners
-    const [existing] = await connection.execute('SELECT COUNT(*) as count FROM offer_banners');
-    if (existing[0].count === 0) {
-      console.log('Seeding initial promotional offer banners for Roja Traders...');
+    // Check if banners exist, seed missing default high quality banners
+    const [existing] = await connection.execute('SELECT title FROM offer_banners');
+    const existingTitles = existing.map(r => r.title);
+    if (existingTitles.length < 5) {
+      console.log('Seeding complementary promotional offer banners for Roja Traders...');
 
       const defaultBanners = [
         {
@@ -38,7 +39,7 @@ async function createBannersTable() {
           image_url: 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=1000&auto=format&fit=crop&q=80',
           link_url: '/products?category_id=1',
           button_text: 'Explore Salt & Provisions',
-          display_order: 1,
+          display_order: 2,
           is_active: 1
         },
         {
@@ -49,7 +50,7 @@ async function createBannersTable() {
           image_url: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1000&auto=format&fit=crop&q=80',
           link_url: '/products?category_id=2',
           button_text: 'View Rangoli Powders',
-          display_order: 2,
+          display_order: 3,
           is_active: 1
         },
         {
@@ -60,7 +61,7 @@ async function createBannersTable() {
           image_url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=1000&auto=format&fit=crop&q=80',
           link_url: '/products?category_id=5',
           button_text: 'Order Traditional Food',
-          display_order: 3,
+          display_order: 4,
           is_active: 1
         },
         {
@@ -71,31 +72,31 @@ async function createBannersTable() {
           image_url: 'https://images.unsplash.com/photo-1585421514738-01798e348b17?w=1000&auto=format&fit=crop&q=80',
           link_url: '/products?category_id=4',
           button_text: 'Shop Cleaners & Tools',
-          display_order: 4,
+          display_order: 5,
           is_active: 1
         }
       ];
 
       for (const b of defaultBanners) {
-        await connection.execute(`
-          INSERT INTO offer_banners 
-            (title, subtitle, badge_text, discount_tag, image_url, link_url, button_text, display_order, is_active)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-          b.title,
-          b.subtitle,
-          b.badge_text,
-          b.discount_tag,
-          b.image_url,
-          b.link_url,
-          b.button_text,
-          b.display_order,
-          b.is_active
-        ]);
+        if (!existingTitles.includes(b.title)) {
+          await connection.execute(`
+            INSERT INTO offer_banners 
+              (title, subtitle, badge_text, discount_tag, image_url, link_url, button_text, display_order, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `, [
+            b.title,
+            b.subtitle,
+            b.badge_text,
+            b.discount_tag,
+            b.image_url,
+            b.link_url,
+            b.button_text,
+            b.display_order,
+            b.is_active
+          ]);
+        }
       }
-      console.log(`✅ Seeded ${defaultBanners.length} default offer banners.`);
-    } else {
-      console.log(`ℹ️ ${existing[0].count} offer banners already exist.`);
+      console.log('✅ Complementary offer banners verified and added.');
     }
 
   } catch (err) {

@@ -18,7 +18,7 @@ import {
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Pagination from '../components/Pagination';
-import { convertGoogleDriveUrl } from '../utils/urlHelper';
+import { convertGoogleDriveUrl, getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 
 export default function BannerManagement() {
   const { success, error, warning } = useToast();
@@ -354,9 +354,13 @@ export default function BannerManagement() {
               {/* Poster Image Preview */}
               <div className="relative h-56 w-full bg-slate-900 overflow-hidden">
                 <img
-                  src={b.image_url}
+                  src={getImageUrl(b.image_url)}
                   alt={b.title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                  }}
                 />
                 {/* Subtle Top Gradient */}
                 <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/80 via-black/30 to-transparent pointer-events-none" />
@@ -544,9 +548,13 @@ export default function BannerManagement() {
               {formData.image_url && (
                 <div className="h-32 rounded-2xl overflow-hidden border border-slate-200 relative bg-slate-900">
                   <img
-                    src={formData.image_url}
+                    src={getImageUrl(formData.image_url)}
                     alt="Preview"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-3 flex flex-col justify-end text-white">
                     <span className="font-bold text-xs">{formData.title || 'Poster Title Preview'}</span>

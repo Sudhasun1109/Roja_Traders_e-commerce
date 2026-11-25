@@ -67,25 +67,30 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {hasOffers ? (
-            /* 2-Column Layout when Offer Posters are Active */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-              {/* LEFT Column: Headline, Description, CTAs & Value Badges */}
-              <div className="lg:col-span-6 space-y-6 text-left">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
+            /* First View: Offer Poster Carousel on TOP, Store Content BELOW */
+            <div className="space-y-6 sm:space-y-8">
+              {/* 1. TOP: Auto-Scrolling Offer Posters Carousel - First View! */}
+              <div className="w-full max-w-5xl mx-auto">
+                <OfferPosterCarousel initialBanners={banners} />
+              </div>
+
+              {/* 2. BELOW: Headline, Description, CTAs & Value Badges */}
+              <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
                   Quality Products, Honest Prices –{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
                     Your Everyday Essentials!
                   </span>
                 </h1>
 
-                <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal max-w-xl">
+                <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
                   Explore trusted daily groceries, cleaning essentials, rangoli powders & traditional food items. Order instantly via WhatsApp with zero hassle!
                 </p>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-1">
                   <Link
                     to="/products"
-                    className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all transform hover:-translate-y-0.5 active:scale-95"
+                    className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all transform hover:-translate-y-0.5 active:scale-95"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span>Explore Catalog</span>
@@ -94,7 +99,7 @@ export default function HomePage() {
 
                   <button
                     onClick={handleOpenWhatsApp}
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/20 backdrop-blur-md transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm border border-white/20 backdrop-blur-md transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                   >
                     <MessageCircle className="w-4 h-4 fill-[#25D366] text-[#25D366]" />
                     <span>Chat on WhatsApp</span>
@@ -102,8 +107,8 @@ export default function HomePage() {
                 </div>
 
                 {/* Quick Micro-Perks */}
-                <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-5 text-xs text-slate-300 font-medium border-t border-white/10 pt-4">
-                  <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full">
+                <div className="pt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs text-slate-300 font-medium border-t border-white/10 max-w-2xl mx-auto">
+                  <span className="inline-flex items-center gap-1.5 text-amber-300 font-bold bg-white/10 px-2.5 py-1 rounded-full text-[11px] sm:text-xs">
                     <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                     <span>Delivery in Tiruppur & Avinashi Only</span>
                   </span>
@@ -117,11 +122,6 @@ export default function HomePage() {
                     <span className="text-emerald-400 font-bold">✓</span> Verified Stock
                   </span>
                 </div>
-              </div>
-
-              {/* RIGHT Column: Auto-Scrolling Offer Posters Carousel taking full space */}
-              <div className="lg:col-span-6 w-full">
-                <OfferPosterCarousel initialBanners={banners} />
               </div>
             </div>
           ) : (

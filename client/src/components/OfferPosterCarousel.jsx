@@ -7,6 +7,7 @@ import {
   Tag
 } from 'lucide-react';
 import api from '../services/api';
+import { getImageUrl, DEFAULT_PRODUCT_IMAGE } from '../utils/urlHelper';
 
 export default function OfferPosterCarousel({ initialBanners = null }) {
   const [banners, setBanners] = useState(initialBanners || []);
@@ -82,7 +83,7 @@ export default function OfferPosterCarousel({ initialBanners = null }) {
 
   return (
     <div
-      className="relative w-full h-80 sm:h-[400px] lg:h-[440px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl group select-none bg-slate-900"
+      className="relative w-full h-56 sm:h-72 md:h-80 lg:h-[400px] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl group select-none bg-slate-900"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -102,9 +103,13 @@ export default function OfferPosterCarousel({ initialBanners = null }) {
           >
             {/* Pure High-Visibility Poster Image */}
             <img
-              src={b.image_url}
+              src={getImageUrl(b.image_url)}
               alt={b.title}
               className="w-full h-full object-cover object-center transform hover:scale-[1.02] transition-transform duration-700"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
+              }}
             />
 
             {/* Subtle Top Glass Gradient only behind top badge for readability */}
