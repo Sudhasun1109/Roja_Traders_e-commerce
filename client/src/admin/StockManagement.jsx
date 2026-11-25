@@ -223,30 +223,46 @@ export default function StockManagement() {
           </p>
         </div>
 
-        {/* Tab switcher */}
-        <div className="flex bg-gray-100 p-1 rounded-2xl">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setActiveTab('inventory')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'inventory'
-                ? 'bg-white text-emerald-800 shadow-xs'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
+            onClick={() => {
+              fetchStockData();
+              success('Stock data refreshed');
+            }}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer disabled:opacity-50"
+            title="Refresh stock inventory & audit history"
           >
-            <Boxes className="w-3.5 h-3.5" />
-            <span>Stock Inventory ({inventory.length})</span>
+            <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
           </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'history'
-                ? 'bg-white text-emerald-800 shadow-xs'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            <History className="w-3.5 h-3.5" />
-            <span>Audit History</span>
-          </button>
+
+          {/* Tab switcher */}
+          <div className="flex bg-gray-100 p-1 rounded-2xl">
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'inventory'
+                  ? 'bg-white text-emerald-800 shadow-xs'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <Boxes className="w-3.5 h-3.5" />
+              <span>Stock Inventory ({inventory.length})</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'history'
+                  ? 'bg-white text-emerald-800 shadow-xs'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <History className="w-3.5 h-3.5" />
+              <span>Audit History</span>
+            </button>
+          </div>
         </div>
       </div>
 

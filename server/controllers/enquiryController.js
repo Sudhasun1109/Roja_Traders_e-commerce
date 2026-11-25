@@ -91,6 +91,7 @@ async function createEnquiry(req, res, next) {
         tamil_name: product.tamil_name || null,
         unit_price: unitPrice,
         quantity: requestedQty,
+        previous_stock: product.stock_quantity,
         subtotal
       });
     }
@@ -132,8 +133,9 @@ async function createEnquiry(req, res, next) {
 
     const enquiryId = enquiryResult.insertId;
 
-    // Insert enquiry items with product_name and tamil_name
+    // Insert enquiry items and reduce stock for ordered items
     for (const vItem of validatedItems) {
+      // 1. Insert item record
       await connection.execute(
         `INSERT INTO enquiry_items 
           (enquiry_id, product_id, product_name, tamil_name, unit_price, quantity, subtotal)
@@ -146,6 +148,28 @@ async function createEnquiry(req, res, next) {
           vItem.unit_price,
           vItem.quantity,
           vItem.subtotal
+        ]
+      );
+
+      // 2. Reduce stock quantity in products table
+      const prevStock = vItem.previous_stock;
+      const newStock = Math.max(0, prevStock - vItem.quantity);
+      await connection.execute(
+        'UPDATE products SET stock_quantity = ? WHERE id = ?',
+        [newStock, vItem.product_id]
+      );
+
+      // 3. Log stock reduction in stock_history audit log
+      await connection.execute(
+        `INSERT INTO stock_history 
+          (product_id, previous_stock, updated_stock, change_type, notes, updated_by)
+         VALUES (?, ?, ?, 'decrease', ?, ?)`,
+        [
+          vItem.product_id,
+          prevStock,
+          newStock,
+          `Customer Order placed: ${invoiceNumber} (Qty: ${vItem.quantity})`,
+          name || 'Customer'
         ]
       );
     }
@@ -368,15 +392,17 @@ async function getAdminEnquiryById(req, res, next) {
 }
 
 /**
- * Admin: Update enquiry status
+ * Admin: Update enquiry status with automatic stock flow synchronization
  * PUT /api/admin/enquiries/:id/status
  */
 async function updateEnquiryStatus(req, res, next) {
+  const connection = await pool.getConnection();
   try {
     const { id } = req.params;
     let { enquiry_status, notes } = req.body;
 
     if (!enquiry_status) {
+      connection.release();
       return errorResponse(res, 'Enquiry status is required', 400);
     }
 
@@ -386,20 +412,103 @@ async function updateEnquiryStatus(req, res, next) {
 
     const validStatuses = ['pending', 'completed', 'rejected', 'cancelled', 'contacted'];
     if (!validStatuses.includes(enquiry_status)) {
-      return errorResponse(res, 'Invalid enquiry status. Must be pending, completed, or rejected', 400);
+      connection.release();
+      return errorResponse(res, 'Invalid enquiry status. Must be pending, completed, contacted, rejected, or cancelled', 400);
     }
 
-    const [result] = await pool.execute(
+    await connection.beginTransaction();
+
+    const [enquiries] = await connection.execute(
+      'SELECT id, invoice_number, enquiry_status FROM enquiries WHERE id = ? FOR UPDATE',
+      [id]
+    );
+
+    if (enquiries.length === 0) {
+      await connection.rollback();
+      connection.release();
+      return errorResponse(res, 'Enquiry not found', 404);
+    }
+
+    const currentEnquiry = enquiries[0];
+    const oldStatus = currentEnquiry.enquiry_status;
+    const isOldCancelled = oldStatus === 'cancelled' || oldStatus === 'rejected';
+    const isNewCancelled = enquiry_status === 'cancelled' || enquiry_status === 'rejected';
+    const adminUser = req.admin ? req.admin.username : (req.user ? req.user.username : 'admin');
+
+    // 1. If transitioning from active -> cancelled or rejected: RESTORE STOCK
+    if (!isOldCancelled && isNewCancelled) {
+      const [items] = await connection.execute(
+        'SELECT product_id, quantity FROM enquiry_items WHERE enquiry_id = ?',
+        [id]
+      );
+      for (const item of items) {
+        const [pRows] = await connection.execute(
+          'SELECT stock_quantity FROM products WHERE id = ? FOR UPDATE',
+          [item.product_id]
+        );
+        if (pRows.length > 0) {
+          const prev = pRows[0].stock_quantity;
+          const next = prev + item.quantity;
+          await connection.execute('UPDATE products SET stock_quantity = ? WHERE id = ?', [next, item.product_id]);
+          await connection.execute(
+            `INSERT INTO stock_history 
+              (product_id, previous_stock, updated_stock, change_type, notes, updated_by)
+             VALUES (?, ?, ?, 'increase', ?, ?)`,
+            [
+              item.product_id,
+              prev,
+              next,
+              `Order ${enquiry_status}: ${currentEnquiry.invoice_number} (Restored ${item.quantity} pcs)`,
+              adminUser
+            ]
+          );
+        }
+      }
+    }
+
+    // 2. If transitioning from cancelled/rejected -> active: RE-DEDUCT STOCK
+    if (isOldCancelled && !isNewCancelled) {
+      const [items] = await connection.execute(
+        'SELECT product_id, quantity FROM enquiry_items WHERE enquiry_id = ?',
+        [id]
+      );
+      for (const item of items) {
+        const [pRows] = await connection.execute(
+          'SELECT stock_quantity FROM products WHERE id = ? FOR UPDATE',
+          [item.product_id]
+        );
+        if (pRows.length > 0) {
+          const prev = pRows[0].stock_quantity;
+          const next = Math.max(0, prev - item.quantity);
+          await connection.execute('UPDATE products SET stock_quantity = ? WHERE id = ?', [next, item.product_id]);
+          await connection.execute(
+            `INSERT INTO stock_history 
+              (product_id, previous_stock, updated_stock, change_type, notes, updated_by)
+             VALUES (?, ?, ?, 'decrease', ?, ?)`,
+            [
+              item.product_id,
+              prev,
+              next,
+              `Order re-activated (${enquiry_status}): ${currentEnquiry.invoice_number} (Deducted ${item.quantity} pcs)`,
+              adminUser
+            ]
+          );
+        }
+      }
+    }
+
+    await connection.execute(
       'UPDATE enquiries SET enquiry_status = ?, notes = COALESCE(?, notes) WHERE id = ?',
       [enquiry_status, notes !== undefined ? notes : null, id]
     );
 
-    if (result.affectedRows === 0) {
-      return errorResponse(res, 'Enquiry not found', 404);
-    }
+    await connection.commit();
+    connection.release();
 
     return successResponse(res, { id, enquiry_status, notes }, `Enquiry status updated to ${enquiry_status}`);
   } catch (error) {
+    await connection.rollback();
+    connection.release();
     next(error);
   }
 }
@@ -585,26 +694,61 @@ async function getMyOrders(req, res, next) {
 }
 
 /**
- * Admin: Delete single enquiry
+ * Admin: Delete single enquiry (restores stock if order was active)
  * DELETE /api/admin/enquiries/:id
  */
 async function deleteEnquiry(req, res, next) {
   const connection = await pool.getConnection();
   try {
     const { id } = req.params;
-    const [rows] = await connection.execute('SELECT id, invoice_number FROM enquiries WHERE id = ?', [id]);
+    const [rows] = await connection.execute('SELECT id, invoice_number, enquiry_status FROM enquiries WHERE id = ?', [id]);
     if (rows.length === 0) {
       connection.release();
       return errorResponse(res, 'Enquiry not found', 404);
     }
 
+    const enq = rows[0];
+    const adminUser = req.admin ? req.admin.username : 'admin';
+
     await connection.beginTransaction();
+
+    // If deleting an active order, restore its item quantities to available stock
+    if (enq.enquiry_status !== 'cancelled' && enq.enquiry_status !== 'rejected') {
+      const [items] = await connection.execute(
+        'SELECT product_id, quantity FROM enquiry_items WHERE enquiry_id = ?',
+        [id]
+      );
+      for (const item of items) {
+        const [pRows] = await connection.execute(
+          'SELECT stock_quantity FROM products WHERE id = ? FOR UPDATE',
+          [item.product_id]
+        );
+        if (pRows.length > 0) {
+          const prev = pRows[0].stock_quantity;
+          const next = prev + item.quantity;
+          await connection.execute('UPDATE products SET stock_quantity = ? WHERE id = ?', [next, item.product_id]);
+          await connection.execute(
+            `INSERT INTO stock_history 
+              (product_id, previous_stock, updated_stock, change_type, notes, updated_by)
+             VALUES (?, ?, ?, 'increase', ?, ?)`,
+            [
+              item.product_id,
+              prev,
+              next,
+              `Order deleted: ${enq.invoice_number} (Restored ${item.quantity} pcs)`,
+              adminUser
+            ]
+          );
+        }
+      }
+    }
+
     await connection.execute('DELETE FROM enquiry_items WHERE enquiry_id = ?', [id]);
     await connection.execute('DELETE FROM enquiries WHERE id = ?', [id]);
     await connection.commit();
     connection.release();
 
-    return successResponse(res, { id }, 'Enquiry deleted successfully');
+    return successResponse(res, { id }, 'Enquiry deleted and stock restored successfully');
   } catch (error) {
     await connection.rollback();
     connection.release();
@@ -613,7 +757,7 @@ async function deleteEnquiry(req, res, next) {
 }
 
 /**
- * Admin: Bulk delete enquiries
+ * Admin: Bulk delete enquiries (restores stock for active orders)
  * POST /api/admin/enquiries/bulk-delete
  */
 async function bulkDeleteEnquiries(req, res, next) {
@@ -631,8 +775,49 @@ async function bulkDeleteEnquiries(req, res, next) {
       return errorResponse(res, 'No valid enquiry IDs provided', 400);
     }
 
+    const adminUser = req.admin ? req.admin.username : 'admin';
+
     await connection.beginTransaction();
+
+    // Query all target enquiries to check status and restore stock for active ones
     const placeholders = cleanIds.map(() => '?').join(',');
+    const [enquiries] = await connection.execute(
+      `SELECT id, invoice_number, enquiry_status FROM enquiries WHERE id IN (${placeholders})`,
+      cleanIds
+    );
+
+    for (const enq of enquiries) {
+      if (enq.enquiry_status !== 'cancelled' && enq.enquiry_status !== 'rejected') {
+        const [items] = await connection.execute(
+          'SELECT product_id, quantity FROM enquiry_items WHERE enquiry_id = ?',
+          [enq.id]
+        );
+        for (const item of items) {
+          const [pRows] = await connection.execute(
+            'SELECT stock_quantity FROM products WHERE id = ? FOR UPDATE',
+            [item.product_id]
+          );
+          if (pRows.length > 0) {
+            const prev = pRows[0].stock_quantity;
+            const next = prev + item.quantity;
+            await connection.execute('UPDATE products SET stock_quantity = ? WHERE id = ?', [next, item.product_id]);
+            await connection.execute(
+              `INSERT INTO stock_history 
+                (product_id, previous_stock, updated_stock, change_type, notes, updated_by)
+               VALUES (?, ?, ?, 'increase', ?, ?)`,
+              [
+                item.product_id,
+                prev,
+                next,
+                `Order bulk-deleted: ${enq.invoice_number} (Restored ${item.quantity} pcs)`,
+                adminUser
+              ]
+            );
+          }
+        }
+      }
+    }
+
     await connection.execute(`DELETE FROM enquiry_items WHERE enquiry_id IN (${placeholders})`, cleanIds);
     const [result] = await connection.execute(`DELETE FROM enquiries WHERE id IN (${placeholders})`, cleanIds);
     await connection.commit();
@@ -641,7 +826,7 @@ async function bulkDeleteEnquiries(req, res, next) {
     return successResponse(
       res,
       { deletedCount: result.affectedRows, ids: cleanIds },
-      `${result.affectedRows} enquiries deleted successfully`
+      `${result.affectedRows} enquiries deleted and stock restored successfully`
     );
   } catch (error) {
     await connection.rollback();
