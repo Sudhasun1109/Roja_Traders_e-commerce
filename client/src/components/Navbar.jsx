@@ -459,7 +459,7 @@ export default function Navbar() {
 
               {/* Mobile Auto-Suggestions Dropdown right beneath search bar */}
               {showSuggestions && searchTerm.trim().length >= 1 && (
-                <div className="absolute top-full right-[-70px] w-[290px] sm:w-[320px] mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden z-50 text-left animate-fadeIn">
+                <div className="absolute top-full right-0 max-w-[calc(100vw-32px)] w-[280px] sm:w-[320px] mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden z-50 text-left animate-fadeIn">
                   {isLoadingSuggestions ? (
                     <div className="p-3 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                       <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-spin" />

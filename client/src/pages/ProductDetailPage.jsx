@@ -173,9 +173,9 @@ export default function ProductDetailPage() {
   const specsList = Object.entries(product.specifications || {});
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
-      {/* Breadcrumb & Back */}
-      <div className="flex items-center gap-2 text-xs text-slate-500">
+    <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8 space-y-6 sm:space-y-8">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500">
         <Link to="/" className="hover:text-emerald-700 transition-colors">
           Home
         </Link>
@@ -184,20 +184,20 @@ export default function ProductDetailPage() {
           Products
         </Link>
         <span>/</span>
-        <span className="text-slate-900 font-semibold truncate max-w-xs">{product.product_name}</span>
+        <span className="text-slate-900 font-semibold truncate max-w-[180px] sm:max-w-xs">{product.product_name}</span>
       </div>
 
       {/* Main Product Showcase Card */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs p-3.5 sm:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 lg:gap-10">
           {/* Images Section */}
-          <div className="lg:col-span-6 space-y-4">
-            {/* Primary Large Image */}
-            <div className="relative aspect-square rounded-3xl bg-slate-50 overflow-hidden border border-slate-200/80 shadow-2xs group">
+          <div className="lg:col-span-6 space-y-2.5 sm:space-y-4">
+            {/* Primary Responsive Image Container */}
+            <div className="relative w-full h-56 sm:h-72 lg:h-auto lg:aspect-square rounded-2xl bg-slate-50/90 overflow-hidden border border-slate-200/80 shadow-2xs group flex items-center justify-center p-2.5 sm:p-4">
               <img
                 src={getImageUrl(selectedImage)}
                 alt={product.product_name}
-                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                className="max-w-full max-h-full object-contain object-center drop-shadow-xs group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
@@ -206,20 +206,20 @@ export default function ProductDetailPage() {
 
               {/* Badges on Top of Image */}
               {isOutOfStock ? (
-                <div className="absolute top-4 left-4 bg-red-600 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-lg border border-red-500 uppercase tracking-wider flex items-center gap-1.5 z-10">
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-red-600 text-white font-extrabold text-[10px] sm:text-xs px-2.5 py-1 rounded-full shadow-lg border border-red-500 uppercase tracking-wider flex items-center gap-1 z-10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   Out of Stock
                 </div>
               ) : discountPercent ? (
-                <div className="absolute top-4 left-4 bg-rose-500 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow-md z-10">
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-rose-500 text-white font-extrabold text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full shadow-md z-10">
                   {discountPercent}% OFF
                 </div>
               ) : null}
 
               {/* Red banner directly on top of image when Out of Stock */}
               {isOutOfStock && (
-                <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center p-4 z-10 pointer-events-none">
-                  <span className="bg-red-600 text-white text-base sm:text-lg font-black px-6 py-2.5 rounded-2xl uppercase tracking-wider shadow-2xl border border-red-400">
+                <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center p-3 z-10 pointer-events-none">
+                  <span className="bg-red-600 text-white text-sm sm:text-lg font-black px-4 sm:px-6 py-2 rounded-xl sm:rounded-2xl uppercase tracking-wider shadow-2xl border border-red-400">
                     Out of Stock
                   </span>
                 </div>
@@ -228,12 +228,12 @@ export default function ProductDetailPage() {
 
             {/* Thumbnail selector */}
             {product.images && product.images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 scrollbar-none">
                 {product.images.map((img) => (
                   <button
                     key={img.id}
                     onClick={() => setSelectedImage(img.image_url)}
-                    className={`relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                    className={`relative w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
                       selectedImage === img.image_url
                         ? 'border-emerald-600 ring-2 ring-emerald-500/20 shadow-sm'
                         : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
@@ -242,7 +242,7 @@ export default function ProductDetailPage() {
                     <img
                       src={getImageUrl(img.image_url)}
                       alt="thumbnail"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain p-1 bg-white"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
@@ -255,64 +255,135 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Product Details Section */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div>
-                <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/50">
+          <div className="lg:col-span-6 flex flex-col justify-between space-y-3.5 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              {/* Category & Stock Status in a Single Header Row */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/50">
                   {product.category_name}
                 </span>
-              </div>
 
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-                  {product.product_name}
-                </h1>
-                {product.tamil_name && (
-                  <p className="text-sm sm:text-base font-semibold text-emerald-700 mt-1">
-                    {product.tamil_name}
-                  </p>
-                )}
-              </div>
-
-              {/* Price Row */}
-              <div className="flex items-baseline gap-3 pt-1">
-                <span className="text-3xl font-black text-slate-900">
-                  ₹{parseFloat(effectivePrice).toLocaleString('en-IN')}
-                </span>
-                {product.discount_price && (
-                  <>
-                    <span className="text-base text-slate-400 line-through">
-                      ₹{parseFloat(product.price).toLocaleString('en-IN')}
-                    </span>
-                    <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
-                      Save ₹{(product.price - product.discount_price).toLocaleString('en-IN')}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              {/* Stock Status Badge */}
-              <div className="pt-1">
                 {isOutOfStock ? (
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-100">
-                    <PackageX className="w-4 h-4" />
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[10px] sm:text-xs font-bold border border-rose-100">
+                    <PackageX className="w-3.5 h-3.5" />
                     <span>Out of Stock</span>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/60">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] sm:text-xs font-bold border border-emerald-200/60">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                     <span>In Stock</span>
                   </div>
                 )}
               </div>
 
+              {/* Title & Tamil Name */}
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                  {product.product_name}
+                </h1>
+                {product.tamil_name && (
+                  <p className="text-xs sm:text-sm font-semibold text-emerald-700 mt-0.5">
+                    {product.tamil_name}
+                  </p>
+                )}
+              </div>
+
+              {/* Price & Quantity Selector on a Single Row on Mobile */}
+              <div className="flex items-center justify-between gap-2 py-2 border-y border-slate-100">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                    ₹{parseFloat(effectivePrice).toLocaleString('en-IN')}
+                  </span>
+                  {discountPercent ? (
+                    <>
+                      <span className="text-xs sm:text-base text-slate-400 line-through">
+                        ₹{parseFloat(product.price).toLocaleString('en-IN')}
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                        {discountPercent}% OFF
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+
+                {/* Inline Quantity selector */}
+                {!isOutOfStock && (
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex items-center border border-slate-200 bg-slate-50 rounded-xl overflow-hidden shadow-2xs">
+                      <button
+                        onClick={handleDecrement}
+                        disabled={quantity <= 1}
+                        className="p-1.5 px-2.5 hover:bg-slate-200 text-slate-600 disabled:opacity-30 transition-colors cursor-pointer"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="px-2.5 text-xs sm:text-sm font-bold text-slate-900 font-mono">{quantity}</span>
+                      <button
+                        onClick={handleIncrement}
+                        disabled={quantity >= product.stock_quantity}
+                        className="p-1.5 px-2.5 hover:bg-slate-200 text-slate-600 disabled:opacity-30 transition-colors cursor-pointer"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons: 2-Column Grid on Mobile for Maximum Accessibility */}
+              <div className="space-y-2 pt-1">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isOutOfStock || isCooldown}
+                    className={`flex items-center justify-center gap-1.5 py-2.5 sm:py-3.5 px-2.5 sm:px-6 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
+                      isCooldown
+                        ? 'bg-emerald-50 border-2 border-emerald-400 text-emerald-800 cursor-not-allowed shadow-inner'
+                        : isOutOfStock
+                        ? 'border-2 border-slate-300 text-slate-400 opacity-30 cursor-not-allowed'
+                        : 'border-2 border-emerald-700 text-emerald-800 hover:bg-emerald-50 active:scale-98 shadow-2xs'
+                    }`}
+                    title={isCooldown ? `Please wait ${cooldown}s before adding again` : 'Add to Cart'}
+                  >
+                    {isCooldown ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                        <span>Added ({cooldown}s)</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <span>Add to Cart</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleWhatsAppOrder}
+                    disabled={isOutOfStock || isSubmittingEnquiry}
+                    className="flex items-center justify-center gap-1.5 py-2.5 sm:py-3.5 px-2.5 sm:px-6 rounded-xl sm:rounded-2xl bg-[#25D366] hover:bg-[#1fb858] text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-500/20 active:scale-98 disabled:opacity-40 transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 fill-white stroke-none" />
+                    <span>{isSubmittingEnquiry ? 'Preparing...' : 'Order on WhatsApp'}</span>
+                  </button>
+                </div>
+
+                {/* Micro-Notice */}
+                <div className="p-2 sm:p-2.5 bg-emerald-50/70 border border-emerald-200/50 rounded-xl text-[10px] sm:text-[11px] text-emerald-900 flex items-center justify-center gap-2 text-center">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>No card payment required · Verified direct delivery on WhatsApp</span>
+                </div>
+              </div>
+
               {/* Specifications */}
               {specsList.length > 0 && (
-                <div className="pt-2">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                <div className="pt-2 border-t border-slate-100">
+                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-900 uppercase tracking-wider mb-1.5">
                     Specifications & Details
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 bg-slate-50/80 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/80 text-xs">
                     {specsList.map(([key, val]) => (
                       <div key={key} className="flex justify-between py-1 border-b border-slate-200/50 last:border-none">
                         <span className="text-slate-500 font-medium">{key}:</span>
@@ -322,81 +393,6 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Ordering Action Area */}
-            <div className="space-y-4 pt-4 border-t border-slate-200/80">
-              {/* Quantity selector */}
-              {!isOutOfStock && (
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Quantity:</span>
-                  <div className="flex items-center border border-slate-200 bg-slate-50 rounded-xl overflow-hidden">
-                    <button
-                      onClick={handleDecrement}
-                      disabled={quantity <= 1}
-                      className="p-2.5 px-3.5 hover:bg-slate-200 text-slate-600 disabled:opacity-30 transition-colors cursor-pointer"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="px-4 text-sm font-bold text-slate-900 font-mono">{quantity}</span>
-                    <button
-                      onClick={handleIncrement}
-                      disabled={quantity >= product.stock_quantity}
-                      className="p-2.5 px-3.5 hover:bg-slate-200 text-slate-600 disabled:opacity-30 transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <span className="text-xs text-slate-400">
-                    (Subtotal: <strong className="text-slate-800">₹{(parseFloat(effectivePrice) * quantity).toLocaleString('en-IN')}</strong>)
-                  </span>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock || isCooldown}
-                  className={`flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl font-bold text-sm transition-all ${
-                    isCooldown
-                      ? 'bg-emerald-50 border-2 border-emerald-400 text-emerald-800 cursor-not-allowed shadow-inner'
-                      : isOutOfStock
-                      ? 'border-2 border-slate-300 text-slate-400 opacity-30 cursor-not-allowed'
-                      : 'border-2 border-emerald-700 text-emerald-800 hover:bg-emerald-50 cursor-pointer active:scale-98 shadow-sm'
-                  }`}
-                  title={isCooldown ? `Please wait ${cooldown}s before adding again` : 'Add to Cart'}
-                >
-                  {isCooldown ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 animate-pulse" />
-                      <span>Added to Cart! ({cooldown}s)</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingBag className="w-4 h-4" />
-                      <span>Add to Cart</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={handleWhatsAppOrder}
-                  disabled={isOutOfStock || isSubmittingEnquiry}
-                  className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-[#25D366] hover:bg-[#1fb858] text-white font-bold text-sm shadow-lg shadow-emerald-500/20 active:scale-98 disabled:opacity-40 transition-all cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-                  <span>{isSubmittingEnquiry ? 'Preparing Enquiry...' : 'Order on WhatsApp'}</span>
-                </button>
-              </div>
-
-              {/* Notice */}
-              <div className="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-2xl text-[11px] text-emerald-900 flex items-center gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                <span>
-                  No online card payment needed. All orders are verified and scheduled directly via official WhatsApp.
-                </span>
-              </div>
             </div>
           </div>
         </div>
